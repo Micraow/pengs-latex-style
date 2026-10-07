@@ -1,0 +1,38 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage{pengs-template}
+\renewcommand{\studentname}{彭勃}
+\renewcommand{\studentid}{25371248}
+\renewcommand{\coursename}{大学物理实验}
+\renewcommand{\assignmentname}{实验报告：示例}
+
+\begin{document}
+\makehomeworktitle
+
+\section{实验目的}
+验证某物理规律，并学习数据处理方法。
+
+\section{实验原理}
+若理论关系为
+\[
+  y=kx+b,
+\]
+则可通过线性拟合估计参数 $k$ 与 $b$。
+
+\section{数据记录}
+\begin{table}[H]
+  \centering
+  \caption{示例测量数据}
+  \begin{tabular}{S[table-format=1.1] S[table-format=2.1]}
+    \toprule
+    {$x$ / \si{\meter}} & {$y$ / \si{\second}} \\
+    \midrule
+    1.0 & 2.1 \\
+    2.0 & 4.0 \\
+    3.0 & 6.2 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{结果与讨论}
+讨论误差来源、拟合结果以及实验现象。
+\end{document}

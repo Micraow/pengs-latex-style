@@ -1,0 +1,489 @@
+% ============================================================================
+% pengs-template.sty -- 通用中文大学作业 / 实验报告 LaTeX 样式
+% 编译器：XeLaTeX
+% 设计目标：数学、计算机、物理、实验报告、通识文字作业共用同一套视觉系统
+% ============================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{pengs-template}[2026/10/07 v2.3 Pengs Template]
+
+% ---------- 模式：默认 homework；普通文档可用 \usepackage[document]{pengs-template} ----------
+\newif\ifpengstemplatedocument
+\pengstemplatedocumentfalse
+\DeclareOption{homework}{\pengstemplatedocumentfalse}
+\DeclareOption{document}{\pengstemplatedocumenttrue}
+\DeclareOption{report}{\pengstemplatedocumenttrue}
+\ExecuteOptions{homework}
+\ProcessOptions\relax
+
+% ---------- 引擎 ----------
+\RequirePackage{iftex}
+\ifXeTeX\else
+  \PackageError{pengs-template}{This package requires XeLaTeX}{Compile with xelatex or latexmk -xelatex.}
+\fi
+
+% ---------- 基础 ----------
+\RequirePackage{etoolbox}
+\RequirePackage{fontspec}
+\RequirePackage{mathtools}
+\RequirePackage{xeCJK}
+\RequirePackage{unicode-math}
+\RequirePackage{xcolor}
+\RequirePackage{geometry}
+\RequirePackage{setspace}
+\RequirePackage{microtype}
+
+% ---------- 元信息：在 main.tex 中用 \renewcommand 覆盖 ----------
+\newcommand{\studentname}{姓名}
+\newcommand{\studentid}{学号}
+\newcommand{\coursename}{课程名称}
+\newcommand{\assignmentname}{作业}
+\newcommand{\semestername}{}
+\newcommand{\assignmentdate}{}
+
+% 普通文档模式元信息
+\newcommand{\doctitle}{文档标题}
+\newcommand{\docsubtitle}{}
+\newcommand{\docauthor}{}
+\newcommand{\docdate}{}
+
+% ---------- 页面 ----------
+\geometry{
+  a4paper,
+  margin=2.55cm,
+  includehead=true,
+  includefoot=true,
+  head=20pt,
+  headsep=0.82cm,
+  footskip=1.15cm,
+  centering
+}
+\setstretch{1.36}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{4em}
+\raggedbottom
+
+% ---------- 字体：优先使用用户机器现有字体，自动回退 ----------
+% 西文正文：Cambria -> Times New Roman -> LMRoman10
+\IfFontExistsTF{Cambria}{
+  \setmainfont{Cambria}
+}{
+  \IfFontExistsTF{Times New Roman}{
+    \setmainfont{Times New Roman}
+  }{
+    \setmainfont{LMRoman10}
+  }
+}
+
+% 西文无衬线：Noto Sans -> Arial -> LMSans10
+\IfFontExistsTF{Noto Sans}{
+  \setsansfont{Noto Sans}
+}{
+  \IfFontExistsTF{Arial}{
+    \setsansfont{Arial}
+  }{
+    \setsansfont{LMSans10}
+  }
+}
+
+% 等宽：JetBrains Mono -> Source Code Pro -> Meslo -> LMMono10
+\IfFontExistsTF{JetBrainsMono Nerd Font}{
+  \setmonofont{JetBrainsMono Nerd Font}
+}{
+  \IfFontExistsTF{Source Code Pro}{
+    \setmonofont{Source Code Pro}
+  }{
+    \IfFontExistsTF{MesloLGS NF}{
+      \setmonofont{MesloLGS NF}
+    }{
+      \setmonofont{LMMono10}
+    }
+  }
+}
+
+% 中文正文：优先静态思源字族；把 Noto * SC variable font 放到最后以规避部分 xdvipdfmx 问题
+\IfFontExistsTF{思源宋体 CN}{
+  \setCJKmainfont{思源宋体 CN}
+}{
+  \IfFontExistsTF{Source Han Serif CN}{
+    \setCJKmainfont{Source Han Serif CN}
+  }{
+    \IfFontExistsTF{Noto Serif CJK SC}{
+      \setCJKmainfont{Noto Serif CJK SC}
+    }{
+      \setCJKmainfont{Noto Serif SC}
+    }
+  }
+}
+
+% 中文标题
+\IfFontExistsTF{思源黑体 CN}{
+  \setCJKsansfont{思源黑体 CN}
+}{
+  \IfFontExistsTF{Source Han Sans CN}{
+    \setCJKsansfont{Source Han Sans CN}
+  }{
+    \IfFontExistsTF{Noto Sans CJK SC}{
+      \setCJKsansfont{Noto Sans CJK SC}
+    }{
+      \setCJKsansfont{Noto Sans SC}
+    }
+  }
+}
+
+% 中文等宽 fallback：避免优先命中 NotoSansSC-VF.ttf
+\IfFontExistsTF{思源黑体 CN}{
+  \setCJKmonofont{思源黑体 CN}
+}{
+  \IfFontExistsTF{Source Han Sans CN}{
+    \setCJKmonofont{Source Han Sans CN}
+  }{
+    \IfFontExistsTF{Noto Sans CJK SC}{
+      \setCJKmonofont{Noto Sans CJK SC}
+    }{
+      \setCJKmonofont{Noto Sans SC}
+    }
+  }
+}
+
+% 数学：Cambria Math -> DejaVu Math TeX Gyre
+\IfFontExistsTF{Cambria Math}{
+  \setmathfont{Cambria Math}
+}{
+  \IfFontExistsTF{DejaVu Math TeX Gyre}{
+    \setmathfont{DejaVu Math TeX Gyre}
+  }{
+    \setmathfont{Latin Modern Math}
+  }
+}
+
+% ℃ 尽量走 CJK 字体；若使用 siunitx 则更推荐 \qty{60}{\degreeCelsius}
+\xeCJKDeclareCharClass{CJK}{"2103}
+
+% ---------- 颜色 ----------
+\definecolor{UniHeading}{HTML}{25364A}     % 蓝灰主色
+\definecolor{UniAccent}{HTML}{5F7390}      % 轻度强调色
+\definecolor{UniMuted}{HTML}{7D8796}       % 次要文字
+\definecolor{UniRule}{HTML}{D8E0EA}        % 线条
+\definecolor{UniLink}{HTML}{8A3049}
+\definecolor{UniURL}{HTML}{2E6C96}
+
+% 代码配色：柔和冷色系，不死板也不过分彩
+\definecolor{UniCodeBg}{HTML}{FAFBFD}
+\definecolor{UniCodeRule}{HTML}{D9E2EC}
+\definecolor{UniCodeNumber}{HTML}{94A3B8}
+\definecolor{UniCodeKeyword}{HTML}{6E59CF}
+\definecolor{UniCodeString}{HTML}{0F766E}
+\definecolor{UniCodeComment}{HTML}{7B8797}
+\definecolor{UniCodeEmph}{HTML}{C2410C}
+
+% ---------- KOMA 标题 ----------
+\setkomafont{section}{\sffamily\bfseries\fontsize{18.5pt}{23pt}\selectfont\color{UniHeading}}
+\setkomafont{subsection}{\sffamily\bfseries\fontsize{14pt}{18pt}\selectfont\color{UniHeading}}
+\setkomafont{subsubsection}{\sffamily\bfseries\fontsize{12.2pt}{15.5pt}\selectfont\color{UniHeading}}
+\RedeclareSectionCommand[
+  beforeskip=1.45\baselineskip,
+  afterskip=0.72\baselineskip
+]{section}
+\RedeclareSectionCommand[
+  beforeskip=1.00\baselineskip,
+  afterskip=0.48\baselineskip
+]{subsection}
+\RedeclareSectionCommand[
+  beforeskip=0.80\baselineskip,
+  afterskip=0.32\baselineskip
+]{subsubsection}
+
+% ---------- 页眉页脚：KOMA 原生 ----------
+\RequirePackage[
+  automark,
+  singlespacing=true,
+  headsepline=.28pt,
+  footsepline=.28pt
+]{scrlayer-scrpage}
+\clearpairofpagestyles
+\setkomafont{pageheadfoot}{\small\sffamily\color{UniMuted}}
+\setkomafont{pagenumber}{\small\sffamily\color{UniHeading}}
+\newcommand{\pengstemplatelefthead}{\ifpengstemplatedocument\doctitle\else\coursename\fi}
+\newcommand{\pengstemplaterighthead}{\ifpengstemplatedocument\docdate\else\assignmentname\fi}
+\newcommand{\pengstemplateleftfoot}{\ifpengstemplatedocument\docauthor\else\studentname\fi}
+\newcommand{\pengstemplaterightfoot}{\ifpengstemplatedocument\else\studentid\fi}
+\ihead{\pengstemplatelefthead}
+\ohead{\pengstemplaterighthead}
+\ifoot{\pengstemplateleftfoot}
+\cfoot{\pagemark}
+\ofoot{\pengstemplaterightfoot}
+\pagestyle{scrheadings}
+
+% ---------- 数学 ----------
+\RequirePackage{amsthm}
+\allowdisplaybreaks[2]
+\setlength{\abovedisplayskip}{10pt plus 3pt minus 2pt}
+\setlength{\belowdisplayskip}{10pt plus 3pt minus 2pt}
+\setlength{\abovedisplayshortskip}{6pt plus 2pt}
+\setlength{\belowdisplayshortskip}{6pt plus 2pt}
+
+% 常用定理环境
+\theoremstyle{plain}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem{proposition}[theorem]{命题}
+\newtheorem{corollary}[theorem]{推论}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{定义}
+\newtheorem{example}[theorem]{例}
+\theoremstyle{remark}
+\newtheorem*{remark}{注}
+\renewcommand{\proofname}{证明}
+
+% ---------- 列表 / 题目 ----------
+\RequirePackage{enumitem}
+\setlist{
+  itemsep=0.6em,
+  parsep=0.18em,
+  topsep=0.65em,
+  partopsep=0pt
+}
+\setlist[enumerate]{leftmargin=2.2em}
+\setlist[itemize]{leftmargin=1.85em}
+\newlist{questions}{enumerate}{1}
+\setlist[questions]{
+  label=\arabic*.,
+  leftmargin=2.2em,
+  itemsep=1.1em,
+  topsep=0.6em,
+  parsep=0.25em
+}
+
+% ---------- 表格 ----------
+\RequirePackage{booktabs}
+\RequirePackage{array}
+\RequirePackage{tabularx}
+\RequirePackage{longtable}
+\RequirePackage{xltabular}
+\RequirePackage{adjustbox}
+\RequirePackage{makecell}
+\RequirePackage{siunitx}
+\sisetup{
+  detect-all,
+  per-mode=symbol,
+  range-phrase=--,
+  range-units=single
+}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newenvironment{choices}
+  {\par\smallskip\noindent\begin{tabular}{@{}L{0.44\linewidth}@{\hspace{0.06\linewidth}}L{0.44\linewidth}@{}}}
+  {\end{tabular}\par\smallskip}
+\newenvironment{choicesone}
+  {\par\smallskip\noindent\begin{tabular}{@{}L{0.94\linewidth}@{}}}
+  {\end{tabular}\par\smallskip}
+
+% 表格局部预设：放在 { ... } 组内使用，避免污染全文
+\newcommand{\tablecomfortable}{%
+  \small
+  \setlength{\tabcolsep}{5pt}%
+  \renewcommand{\arraystretch}{1.18}%
+}
+\newcommand{\tablecompact}{%
+  \footnotesize
+  \setlength{\tabcolsep}{3.5pt}%
+  \renewcommand{\arraystretch}{1.12}%
+}
+
+% ---------- 图形 ----------
+\RequirePackage{graphicx}
+\RequirePackage{float}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+\graphicspath{{figures/}}
+\captionsetup{
+  font=small,
+  labelfont={bf,sf,color=UniHeading},
+  textfont={color=UniMuted},
+  labelsep=quad,
+  skip=6pt
+}
+\floatplacement{figure}{htbp}
+\floatplacement{table}{htbp}
+
+% ---------- 引用块 / 提示块 ----------
+\RequirePackage{mdframed}
+\definecolor{UniQuoteBorder}{HTML}{D9E2EC}
+\newmdenv[
+  rightline=false,
+  bottomline=false,
+  topline=false,
+  linewidth=2.2pt,
+  linecolor=UniQuoteBorder,
+  skipabove=.75\baselineskip,
+  skipbelow=.75\baselineskip,
+  innerleftmargin=.9em,
+  innerrightmargin=0em,
+  innertopmargin=.28em,
+  innerbottommargin=.28em,
+  backgroundcolor=white
+]{pengstemplatequote}
+\renewenvironment{quote}
+  {\begin{pengstemplatequote}\color{UniMuted}\ignorespaces}
+  {\unskip\end{pengstemplatequote}}
+
+% ---------- 代码 ----------
+\RequirePackage{listings}
+\lstdefinestyle{pengstemplate-code}{
+  numbers=left,
+  numbersep=0.95em,
+  xleftmargin=2.9em,
+  framexleftmargin=2.55em,
+  backgroundcolor=\color{UniCodeBg},
+  basicstyle=\small\ttfamily,
+  numberstyle=\scriptsize\color{UniCodeNumber},
+  frame=single,
+  framerule=0.5pt,
+  framesep=0.55em,
+  rulecolor=\color{UniCodeRule},
+  breaklines=true,
+  breakatwhitespace=false,
+  breakindent=1.2em,
+  postbreak=\mbox{\textcolor{UniMuted}{$\hookrightarrow$}\space},
+  columns=fullflexible,
+  keepspaces=true,
+  tabsize=4,
+  showstringspaces=false,
+  upquote=true,
+  aboveskip=1.0em,
+  belowskip=1.0em,
+  keywordstyle=\bfseries\color{UniCodeKeyword},
+  commentstyle=\color{UniCodeComment},
+  stringstyle=\color{UniCodeString},
+  emphstyle=\color{UniCodeEmph}
+}
+\lstset{style=pengstemplate-code}
+
+% ---------- 超链接：尽量靠后加载 ----------
+\RequirePackage{xurl}
+\RequirePackage[
+  colorlinks=true,
+  linkcolor=UniLink,
+  urlcolor=UniURL,
+  citecolor=UniLink,
+  bookmarksnumbered=true,
+  pdfencoding=auto
+]{hyperref}
+\urlstyle{same}
+
+% ---------- 作业辅助命令 ----------
+% 空白横线：\blank 或 \blank[6cm]
+\newcommand{\blank}[1][4cm]{%
+  \leavevmode\nobreak\rule[-0.22em]{#1}{0.45pt}%
+}
+
+% 填满当前剩余行宽的横线，适合写在句末
+\newcommand{\blankfill}{%
+  \leavevmode\nobreak\leaders\hrule height 0.45pt depth 0pt\hfill\kern0pt
+}
+
+% 已填答案横线：\fillin{答案} 或 \fillin[6cm]{答案}
+\newcommand{\fillin}[2][4cm]{%
+  \leavevmode\underline{\makebox[#1][c]{\strut #2}}%
+}
+
+% 简洁的“解 / 答 / 证明思路”等环境：\begin{solution}[答] ...
+\newenvironment{solution}[1][解]
+  {\par\medskip\noindent{\sffamily\bfseries\color{UniHeading} #1：}\ignorespaces}
+  {\par\medskip}
+
+% 题目之间需要手写空间时：\answerspace{4cm}
+\newcommand{\answerspace}[1]{\par\vspace{#1}}
+
+% 行内代码
+\newcommand{\code}[1]{\texttt{#1}}
+
+% ---------- 普通文档标题 ----------
+% 适合把说明、文字、代码、实验结果直接发给他人；不带“课程作业”的语义。
+\newcommand{\makedocumenttitle}{%
+  \thispagestyle{scrheadings}%
+  \begingroup
+  \vspace*{0.25\baselineskip}%
+  {\fontsize{24pt}{31pt}\selectfont\bfseries\color{UniHeading}\doctitle\par}
+  \ifdefempty{\docsubtitle}{}{\vspace{0.35em}{\large\color{UniMuted}\docsubtitle\par}}
+  \vspace{0.75em}
+  {\small\color{UniMuted}%
+    \ifdefempty{\docauthor}{}{\docauthor}%
+    \ifdefempty{\docdate}{}{\ifdefempty{\docauthor}{}{\quad\textperiodcentered\quad}\docdate}%
+    \par}
+  \vspace{0.85em}
+  {\color{UniRule}\rule{\linewidth}{0.65pt}\par}
+  \vspace{1.15em}
+  \endgroup
+}
+
+\newcommand{\makedocumentcover}{%
+  \begin{titlepage}
+    \thispagestyle{empty}
+    \raggedright
+    \vspace*{0.16\textheight}
+    {\fontsize{30pt}{39pt}\selectfont\bfseries\color{UniHeading}\doctitle\par}
+    \ifdefempty{\docsubtitle}{}{\vspace{0.55em}{\Large\color{UniMuted}\docsubtitle\par}}
+    \vspace{1.15cm}
+    {\color{UniAccent}\rule{0.26\linewidth}{0.9pt}\par}
+    \vfill
+    {\large\ifdefempty{\docauthor}{}{\docauthor\par}}
+    \ifdefempty{\docdate}{}{\vspace{0.45em}{\normalsize\color{UniMuted}\docdate\par}}
+    \vspace*{0.10\textheight}
+  \end{titlepage}
+  \setcounter{page}{1}%
+}
+
+% ---------- 标题页 ----------
+\newcommand{\makehomeworktitle}{%
+  \begin{titlepage}
+    \thispagestyle{empty}
+    \centering
+    \vspace*{0.14\textheight}
+    {\fontsize{26pt}{34pt}\selectfont\bfseries \coursename\par}
+    \ifdefempty{\semestername}{}{\vspace{0.55cm}{\large\sffamily\color{UniMuted}\semestername\par}}
+    \vspace{0.95cm}
+    {\color{UniAccent}\rule{0.34\linewidth}{0.8pt}\par}
+    \vspace{1.15cm}
+    {\fontsize{22pt}{28pt}\selectfont\sffamily\bfseries\color{UniHeading} \assignmentname\par}
+    \ifdefempty{\assignmentdate}{}{\vspace{0.78cm}{\large \assignmentdate\par}}
+    \vfill
+    \begin{minipage}{0.44\linewidth}
+      {\color{UniRule}\rule{\linewidth}{0.6pt}\par}
+      \vspace{0.85em}
+      \begin{tabular}{@{}p{3.4em}l@{}}
+        {\sffamily\bfseries 姓名} & \studentname \\[0.80em]
+        {\sffamily\bfseries 学号} & \studentid
+      \end{tabular}
+      \par\vspace{0.78em}
+      {\color{UniRule}\rule{\linewidth}{0.6pt}}
+    \end{minipage}
+    \vspace*{0.10\textheight}
+  \end{titlepage}
+  \setcounter{page}{1}%
+}
+
+% 无独立封面时使用的紧凑标题
+\newcommand{\makecompacttitle}{%
+  \begingroup
+  \centering
+  {\Large\bfseries \coursename\par}
+  \vspace{.34em}
+  {\large\sffamily\bfseries\color{UniHeading} \assignmentname\par}
+  \vspace{.55em}
+  {\small\color{UniMuted}\studentname\quad\textperiodcentered\quad\studentid
+   \ifdefempty{\assignmentdate}{}{\quad\textperiodcentered\quad\assignmentdate}\par}
+  \vspace{.85em}
+  {\color{UniRule}\rule{0.82\linewidth}{0.55pt}\par}
+  \vspace{1.05em}
+  \endgroup
+}
+
+% ---------- 兼容 / 小优化 ----------
+\AtBeginDocument{%
+  \setlength{\jot}{4pt}% aligned 多行公式行距
+}
+
+\endinput

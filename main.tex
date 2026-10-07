@@ -1,0 +1,32 @@
+% ============================================================================
+% pengs-template 最小起步文件
+% 编译：latexmk -xelatex main.tex
+% 说明：这是给你直接开新作业用的骨架。
+%      如果想看完整示例，请编译 example.tex。
+% ============================================================================
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage{pengs-template}
+
+% ---------- 这几行通常是每次新作业唯一要先改的 ----------
+\renewcommand{\studentname}{彭勃}
+\renewcommand{\studentid}{25371248}
+\renewcommand{\coursename}{2026 秋《课程名称》}
+\renewcommand{\assignmentname}{作业 01}
+\renewcommand{\semestername}{2026 秋}
+\renewcommand{\assignmentdate}{}
+
+\begin{document}
+
+% 二选一：完整封面 / 紧凑标题
+% \makehomeworktitle
+\makecompacttitle
+
+\section*{一、题目}
+
+\begin{questions}
+  \item 在这里写第一题。
+
+  \item 需要留手写空间时，可以使用：\answerspace{4cm}
+\end{questions}
+
+\end{document}

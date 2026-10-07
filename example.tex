@@ -1,0 +1,105 @@
+% ============================================================================
+% pengs-template 完整示例文件
+% 编译：latexmk -xelatex example.tex
+% ============================================================================
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage{pengs-template}
+
+\renewcommand{\studentname}{彭勃}
+\renewcommand{\studentid}{25371248}
+\renewcommand{\coursename}{2026 秋《课程名称》}
+\renewcommand{\assignmentname}{作业 01}
+\renewcommand{\semestername}{2026 秋}
+\renewcommand{\assignmentdate}{}
+
+\begin{document}
+
+\makehomeworktitle
+% \makecompacttitle
+
+\section*{一、基础示例}
+
+\begin{questions}
+  \item 填空可以写成 \blank；如果横线正好在句末，更建议写成 \blankfill
+
+  \item 选择题建议这样排：
+  \begin{choices}
+    A、选项 A & B、选项 B \\
+    C、选项 C & D、选项 D
+  \end{choices}
+
+  \item 数学公式示例：
+  \[
+    F_X(x)=P(X\le x),\qquad
+    \int_0^\infty e^{-x}\,\mathrm dx = 1.
+  \]
+
+  \begin{solution}
+    这里写推导过程。需要留手写空间时使用 \verb|\answerspace{4cm}|。
+  \end{solution}
+\end{questions}
+
+\section*{二、代码或实验内容}
+
+\begin{lstlisting}[language=Python]
+def square(x):
+    return x * x
+
+# 长行演示：listings 已启用自动换行，过长代码不会直接超出页边距。
+print("This is a very long line used to demonstrate automatic line wrapping in the code block, so it should wrap gracefully instead of running out of the page margin.")
+\end{lstlisting}
+
+物理量建议使用 \texttt{siunitx}：温度 \qty{60}{\degreeCelsius}，频率 \qty{3.2}{\giga\hertz}。
+
+\section*{三、表格}
+
+文本较多、希望保持 A4 竖向页面时，让说明性列自动换行：
+
+\begingroup
+\tablecomfortable
+\begin{tabularx}{\linewidth}{@{}l X X r@{}}
+\toprule
+编号 & 实验条件 & 观察结果与说明 & 数值 \\
+\midrule
+1 & 室温、默认参数 & 这是一段较长的说明文字。X 列会自动分配剩余宽度，并在需要时正常换行。 & 12.4 \\
+2 & 高频负载测试 & 另一段较长的说明文字，不需要把整个页面旋转成横向。 & 19.8 \\
+\bottomrule
+\end{tabularx}
+\endgroup
+
+如果是四列真值表或对照表，希望四列等宽且内容水平居中，可直接使用模板提供的 \texttt{C} 列：
+
+\begingroup
+\tablecomfortable
+\begin{tabularx}{\linewidth}{C C C C}
+\toprule
+$A$ & $B$ & $A+B$ & $AB$ \\
+\midrule
+0 & 0 & 0 & 0 \\
+0 & 1 & 1 & 0 \\
+1 & 0 & 1 & 0 \\
+1 & 1 & 1 & 1 \\
+\bottomrule
+\end{tabularx}
+\endgroup
+
+如果行数很多，需要跨页，则用 \texttt{xltabular}：
+
+\begingroup
+\tablecomfortable
+\begin{xltabular}{\linewidth}{@{}l X X r@{}}
+\toprule
+编号 & 条件 & 结果说明 & 数值 \\
+\midrule
+\endfirsthead
+\toprule
+编号 & 条件 & 结果说明 & 数值 \\
+\midrule
+\endhead
+1 & 条件 A & 长表格可以跨页，并让 X 列自动换行。 & 10 \\
+2 & 条件 B & 实际使用时继续添加更多行即可。 & 20 \\
+\bottomrule
+\end{xltabular}
+\endgroup
+
+\end{document}

@@ -1,0 +1,34 @@
+% ============================================================================
+% pengs-template 普通文档模式：说明、文字、代码、实验结果等直接导出 PDF 发给他人
+% 编译：latexmk -xelatex document.tex
+% ============================================================================
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[document]{pengs-template}
+
+\renewcommand{\doctitle}{文档标题}
+\renewcommand{\docsubtitle}{可选副标题}
+\renewcommand{\docauthor}{彭勃}
+\renewcommand{\docdate}{}
+
+\begin{document}
+
+% 普通文档默认推荐这个，不单独占一页。
+\makedocumenttitle
+% 如果确实需要独立封面，则改用：\makedocumentcover
+
+\section{概述}
+
+这里可以直接写说明、分析结果、实验结论或需要分享的文字。
+
+\section{代码}
+
+\begin{lstlisting}[language=Python]
+def hello(name):
+    return f"Hello, {name}!"
+\end{lstlisting}
+
+\section{结果}
+
+需要表格时，请参考 README 中的“表格怎么选”以及 `example.tex`。
+
+\end{document}
