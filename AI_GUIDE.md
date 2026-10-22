@@ -32,7 +32,7 @@
 6. 不把 Markdown 语法混进 LaTeX。
 7. 单位优先 `siunitx`。
 8. 题目用 `questions`，两列选项用 `choices`，解答用 `solution`。
-9. 句末填空优先 `\blankfill`；固定长度才用 `\blank[宽度]`。
+9. 填空题一律用 `\fillin[宽度]{答案不填，留空}` ，不要使用 `\blank`/`\blankfill` 只留空。
 10. 代码块在单个 `lstlisting` 指定语言。长代码行默认自动折行。
 
 ## 表格决策规则
