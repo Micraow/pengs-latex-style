@@ -100,12 +100,22 @@ latexmk -xelatex example.tex
 \end{questions}
 ```
 
-固定宽度填空：
+固定宽度填空（只留空）：
 
 ```tex
 \blank
 \blank[6cm]
 ```
+
+填空并给出答案（推荐，横线宽度自动跟随，横线紧贴文字底部）：
+
+```tex
+\fillin[2cm]{0 和 1}
+\fillin[4cm]{}
+```
+
+> `\fillin` 与 `\blank` 的横线落点一致（基线下方 0.22em）；v2.4 起不再使用
+> `\underline{\makebox...\strut}`，避免空答案时横线过深、看起来像悬空一行。
 
 句末需要自动占满剩余行宽时：
 

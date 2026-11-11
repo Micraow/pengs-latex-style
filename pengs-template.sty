@@ -4,7 +4,7 @@
 % 设计目标：数学、计算机、物理、实验报告、通识文字作业共用同一套视觉系统
 % ============================================================================
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{pengs-template}[2026/10/07 v2.3 Pengs Template]
+\ProvidesPackage{pengs-template}[2026/11/11 v2.4 Pengs Template]
 
 % ---------- 模式：默认 homework；普通文档可用 \usepackage[document]{pengs-template} ----------
 \newif\ifpengstemplatedocument
@@ -385,8 +385,13 @@
 }
 
 % 已填答案横线：\fillin{答案} 或 \fillin[6cm]{答案}
+% 横线画在基线下 0.22em，与 \blank 完全对齐。
+% 旧版写作 \underline{\makebox[#1][c]{\strut #2}}：\strut 自带 0.3\baselineskip 的深度，
+% 横线会被压到基线下约 0.62em，留空时看着像悬空另起一行。
 \newcommand{\fillin}[2][4cm]{%
-  \leavevmode\underline{\makebox[#1][c]{\strut #2}}%
+  \leavevmode
+  \hbox to #1{\hss #2\hss}%
+  \llap{\rule[-0.22em]{#1}{0.45pt}}%
 }
 
 % 简洁的“解 / 答 / 证明思路”等环境：\begin{solution}[答] ...
